@@ -22,7 +22,7 @@ dev_dependencies:
     path: ../../
 
 flutter:
-  disable-swift-package-manager: true
+  enable-swift-package-manager: false
   uses-material-design: true
 
 flavorizr:
