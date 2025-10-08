@@ -1,4 +1,0 @@
-# melos_managed_dependency_overrides: icons_launcher
-dependency_overrides:
-  icons_launcher:
-    path: ../..
