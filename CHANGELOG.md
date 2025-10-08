@@ -1,3 +1,19 @@
+## 3.1.0
+
+ - **FIX**(pubspec): 启用 Swift 包管理器.
+ - **FIX**: ios icon generator.
+ - **FIX**: dart format.
+ - **FIX**: monochrome icon is smaller and blurred.
+ - **FEAT**(macos): add macos flavor support.
+ - **FEAT**(android): add support Flutter v3.29.0.
+ - **FEAT**(ios18): add new icon support for ios 18.
+ - **FEAT**: add new support dark and tinted icons for ios 18.
+ - **FEAT**(cli): add new command for generate all flavors at once.
+ - **FEAT**(improvement): ios and web.
+ - **FEAT**(improvement): ios and web.
+ - **FEAT**: add android notification icon generator.
+ - **FEAT**: field for custom favicon for web.
+
 # Changelog
 
 ## 3.0.1
