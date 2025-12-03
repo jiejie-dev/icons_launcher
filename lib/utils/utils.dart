@@ -10,7 +10,8 @@ bool hasPlatformConfig(Map<String, dynamic> config) {
         isNeedingNewMacOSIcon(platforms) ||
         isNeedingNewWindowsIcon(platforms) ||
         isNeedingNewWebIcon(platforms) ||
-        isNeedingNewLinuxIcon(platforms);
+        isNeedingNewLinuxIcon(platforms) ||
+        isNeedingNewTrayIcon(platforms);
 
     return isHasPlatformSpecific;
   }
@@ -99,6 +100,17 @@ bool hasWebConfig(Map<String, dynamic> platforms) {
 bool isNeedingNewWebIcon(Map<String, dynamic> platforms) {
   return hasWebConfig(platforms) &&
       (platforms['web'] as Map<String, dynamic>)['enable'] == true;
+}
+
+/// Checks if the config has tray.
+bool hasTrayConfig(Map<String, dynamic> platforms) {
+  return platforms.containsKey('tray');
+}
+
+/// Checks if the config need tray.
+bool isNeedingNewTrayIcon(Map<String, dynamic> platforms) {
+  return hasTrayConfig(platforms) &&
+      (platforms['tray'] as Map<String, dynamic>)['enable'] == true;
 }
 
 /// Checking color code

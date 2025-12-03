@@ -223,3 +223,18 @@ const String LINUX_DEFAULT_ICON_NAME = 'app_icon';
 
 /// Linux default icon file with extension
 const String LINUX_DEFAULT_ICON_FILE_NAME = '$LINUX_DEFAULT_ICON_NAME.png';
+
+/// Tray default icon name
+const String TRAY_DEFAULT_ICON_NAME = 'tray_icon';
+
+/// Tray default icon directory (relative to project root)
+const String TRAY_DEFAULT_ICON_DIR = 'assets/icons/';
+
+/// Tray default icon file name for Windows (with extension)
+const String TRAY_DEFAULT_ICON_FILE_NAME_WINDOWS = '$TRAY_DEFAULT_ICON_NAME.ico';
+
+/// Tray default icon file name prefix for macOS (without extension)
+const String TRAY_DEFAULT_ICON_FILE_NAME_MACOS_PREFIX = '${TRAY_DEFAULT_ICON_NAME}_';
+
+/// Tray default icon file name prefix for Linux (without extension)
+const String TRAY_DEFAULT_ICON_FILE_NAME_LINUX_PREFIX = '${TRAY_DEFAULT_ICON_NAME}_';

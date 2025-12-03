@@ -12,6 +12,7 @@ part 'src/android.dart';
 part 'src/ios.dart';
 part 'src/linux.dart';
 part 'src/macos.dart';
+part 'src/tray.dart';
 part 'src/web.dart';
 part 'src/windows.dart';
 part 'utils/flavor_helper.dart';
@@ -51,7 +52,8 @@ Map<String, dynamic> _getConfig({String? configFile}) {
 
   if (yamlMap['icons_launcher'] is! Map) {
     CliLogger.error(
-        "Your $filePath file does not contain a 'icons_launcher' section.");
+      "Your $filePath file does not contain a 'icons_launcher' section.",
+    );
     exit(1);
   }
 
@@ -87,8 +89,10 @@ void _checkConfig(Map<String, dynamic> config) {
     exit(1);
   }
   final errors = <String>[];
-  final globalImagePath =
-      _checkImageExists(config: config, parameter: 'image_path');
+  final globalImagePath = _checkImageExists(
+    config: config,
+    parameter: 'image_path',
+  );
   final platforms = config['platforms'] as Map<String, dynamic>;
 
   // ANDROID
@@ -96,7 +100,7 @@ void _checkConfig(Map<String, dynamic> config) {
     final androidConfig = platforms['android'] as Map<String, dynamic>;
     final androidImagePath =
         _checkImageExists(config: androidConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (androidImagePath == null) {
       errors.add('Please add a `image_path` for Android to your config file.');
     }
@@ -105,20 +109,24 @@ void _checkConfig(Map<String, dynamic> config) {
         !androidConfig.containsKey('adaptive_background_image') &&
         !androidConfig.containsKey('adaptive_background_color')) {
       errors.add(
-          'Please add an `adaptive_background_image` or `adaptive_background_color` for Android to your config file.');
+        'Please add an `adaptive_background_image` or `adaptive_background_color` for Android to your config file.',
+      );
     }
 
     if (!androidConfig.containsKey('adaptive_foreground_image') &&
         (androidConfig.containsKey('adaptive_background_image') ||
             androidConfig.containsKey('adaptive_background_color'))) {
       errors.add(
-          'Please add an `adaptive_foreground_image` for Android to your config file.');
+        'Please add an `adaptive_foreground_image` for Android to your config file.',
+      );
     }
 
     if (androidConfig.containsKey('adaptive_background_image') &&
         androidConfig.containsKey('adaptive_background_color')) {
-      errors.add('Your Android platform can not contain both '
-          '`adaptive_background_image` and `adaptive_background_color`.');
+      errors.add(
+        'Your Android platform can not contain both '
+        '`adaptive_background_image` and `adaptive_background_color`.',
+      );
     }
   }
 
@@ -127,7 +135,7 @@ void _checkConfig(Map<String, dynamic> config) {
     final iosConfig = platforms['ios'] as Map<String, dynamic>;
     final iosImagePath =
         _checkImageExists(config: iosConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (iosImagePath == null) {
       errors.add('Please add a `image_path` for IOS to your config file.');
     }
@@ -138,7 +146,7 @@ void _checkConfig(Map<String, dynamic> config) {
     final macosConfig = platforms['macos'] as Map<String, dynamic>;
     final macosImagePath =
         _checkImageExists(config: macosConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (macosImagePath == null) {
       errors.add('Please add a `image_path` for MacOS to your config file.');
     }
@@ -149,7 +157,7 @@ void _checkConfig(Map<String, dynamic> config) {
     final webConfig = platforms['web'] as Map<String, dynamic>;
     final webImagePath =
         _checkImageExists(config: webConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (webImagePath == null) {
       errors.add('Please add a `image_path` for Web to your config file.');
     }
@@ -160,7 +168,7 @@ void _checkConfig(Map<String, dynamic> config) {
     final windowsConfig = platforms['windows'] as Map<String, dynamic>;
     final windowsImagePath =
         _checkImageExists(config: windowsConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (windowsImagePath == null) {
       errors.add('Please add a `image_path` for Windows to your config file.');
     }
@@ -171,9 +179,20 @@ void _checkConfig(Map<String, dynamic> config) {
     final linuxConfig = platforms['linux'] as Map<String, dynamic>;
     final linuxImagePath =
         _checkImageExists(config: linuxConfig, parameter: 'image_path') ??
-            globalImagePath;
+        globalImagePath;
     if (linuxImagePath == null) {
       errors.add('Please add a `image_path` for Linux to your config file.');
+    }
+  }
+
+  // TRAY
+  if (isNeedingNewTrayIcon(platforms)) {
+    final trayConfig = platforms['tray'] as Map<String, dynamic>;
+    final trayImagePath =
+        _checkImageExists(config: trayConfig, parameter: 'image_path') ??
+        globalImagePath;
+    if (trayImagePath == null) {
+      errors.add('Please add a `image_path` for Tray to your config file.');
     }
   }
 
@@ -276,6 +295,21 @@ void _createIconsByConfig(Map<String, dynamic> config) {
     }
   }
 
+  var imagePathTray = imagePath;
+  if (isNeedingNewTrayIcon(platforms)) {
+    final newImagePath = _checkImageExists(
+      config: platforms['tray'] as Map<String, dynamic>,
+      parameter: 'image_path',
+    );
+    if (newImagePath != null) {
+      imagePathTray = newImagePath;
+    }
+    if (imagePathTray == null) {
+      CliLogger.error('Could not find image path for Tray');
+      exit(1);
+    }
+  }
+
   var imagePathWeb = imagePath;
   if (isNeedingNewWebIcon(platforms)) {
     final newImagePath = _checkImageExists(
@@ -353,11 +387,13 @@ void _createIconsByConfig(Map<String, dynamic> config) {
     }
 
     String? adaptiveBg;
-    if ((platforms['android'] as Map<String, dynamic>)
-        .containsKey('adaptive_background_color')) {
-      final adaptiveBgColor = (platforms['android']
-              as Map<String, dynamic>)['adaptive_background_color']
-          .toString();
+    if ((platforms['android'] as Map<String, dynamic>).containsKey(
+      'adaptive_background_color',
+    )) {
+      final adaptiveBgColor =
+          (platforms['android']
+                  as Map<String, dynamic>)['adaptive_background_color']
+              .toString();
       adaptiveBg = adaptiveBgColor;
     } else if (adaptiveBgImage != null) {
       adaptiveBg = adaptiveBgImage;
@@ -369,14 +405,16 @@ void _createIconsByConfig(Map<String, dynamic> config) {
       final minSdk = _minSdk();
       if (minSdk == 0) {
         CliLogger.error(
-            'Can not find minSdk from android/app/build.gradle or android/local.properties',
-            level: CliLoggerLevel.two);
+          'Can not find minSdk from android/app/build.gradle or android/local.properties',
+          level: CliLoggerLevel.two,
+        );
         exit(1);
       }
       if (minSdk < 26 && imagePathAndroid == null) {
         CliLogger.error(
-            'Adaptive icon config found but no regular Android config. API 26 the regular Android config is required',
-            level: CliLoggerLevel.two);
+          'Adaptive icon config found but no regular Android config. API 26 the regular Android config is required',
+          level: CliLoggerLevel.two,
+        );
         exit(1);
       }
 
@@ -436,6 +474,11 @@ void _createIconsByConfig(Map<String, dynamic> config) {
   //! Linux
   if (isNeedingNewLinuxIcon(platforms) && imagePathLinux != null) {
     createLinuxIcons(imagePath: imagePathLinux);
+  }
+
+  //! Tray
+  if (isNeedingNewTrayIcon(platforms) && imagePathTray != null) {
+    createTrayIcons(imagePath: imagePathTray);
   }
 }
 
