@@ -1,3 +1,7 @@
+## 3.2.0
+
+ - **FEAT**(tray): add support for tray icon configuration and validation.
+
 ## 3.1.0
 
  - **FIX**(pubspec): 启用 Swift 包管理器.
