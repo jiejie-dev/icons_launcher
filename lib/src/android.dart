@@ -556,17 +556,26 @@ int _minSdk() {
 
   //! Fourth try -> local.properties
   if (minSdkValue == null) {
-    final localLines = File(ANDROID_LOCAL_PROPERTIES).readAsLinesSync();
-    const localKey = 'flutter.minSdkVersion=';
-    minSdkValue = _getLineValueNumber(localLines, localKey);
+    final localPropertiesFile = File(ANDROID_LOCAL_PROPERTIES);
+    if (localPropertiesFile.existsSync()) {
+      final localLines = localPropertiesFile.readAsLinesSync();
+      const localKey = 'flutter.minSdkVersion=';
+      minSdkValue = _getLineValueNumber(localLines, localKey);
+    }
   }
 
   //! Fifth try -> flutter.gradle file (default flutter sdk)
   if (minSdkValue == null) {
-    final gradleFile = '${_flutterSdk()}$FLUTTER_SDK_GRADLE_FILE';
-    final flutterLines = File(gradleFile).readAsLinesSync();
-    const flutterLineKey = 'minSdkVersion =';
-    minSdkValue = _getLineValueNumber(flutterLines, flutterLineKey);
+    final flutterSdkPath = _flutterSdk();
+    if (flutterSdkPath.isNotEmpty) {
+      final gradleFile = '$flutterSdkPath$FLUTTER_SDK_GRADLE_FILE';
+      final flutterGradleFile = File(gradleFile);
+      if (flutterGradleFile.existsSync()) {
+        final flutterLines = flutterGradleFile.readAsLinesSync();
+        const flutterLineKey = 'minSdkVersion =';
+        minSdkValue = _getLineValueNumber(flutterLines, flutterLineKey);
+      }
+    }
   }
 
   if (minSdkValue != null) return int.tryParse(minSdkValue) ?? 0;
@@ -575,7 +584,11 @@ int _minSdk() {
 
 /// Retrieves the flutter sdk path
 String _flutterSdk() {
-  final lines = File(ANDROID_LOCAL_PROPERTIES).readAsLinesSync();
+  final localPropertiesFile = File(ANDROID_LOCAL_PROPERTIES);
+  if (!localPropertiesFile.existsSync()) {
+    return '';
+  }
+  final lines = localPropertiesFile.readAsLinesSync();
   const key = 'flutter.sdk=';
   for (var line in lines) {
     if (line.contains(key)) {
