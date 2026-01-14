@@ -33,8 +33,10 @@ void createAndroidIcons({required String imagePath}) {
 
   final image = Icon.loadFile(imagePath);
   if (image == null) {
-    CliLogger.error('The file $imagePath could not be read.',
-        level: CliLoggerLevel.two);
+    CliLogger.error(
+      'The file $imagePath could not be read.',
+      level: CliLoggerLevel.two,
+    );
     exit(1);
   }
 
@@ -92,8 +94,10 @@ void _updateAndroidManifestIconLauncher() {
       // repeat as often as wanted with no quote at start: [^"]*(\"[^"]*)*
       // escaping the slash to place in string: [^"]*(\\"[^"]*)*"
       // result: any string which does only include escaped quotes
-      return line.replaceAll(RegExp(r'android:icon="[^"]*(\\"[^"]*)*"'),
-          'android:icon="@mipmap/$ANDROID_ICON_NAME"');
+      return line.replaceAll(
+        RegExp(r'android:icon="[^"]*(\\"[^"]*)*"'),
+        'android:icon="@mipmap/$ANDROID_ICON_NAME"',
+      );
     } else {
       return line;
     }
@@ -123,7 +127,11 @@ void createAndroidAdaptiveIcon({
   _createAdaptiveBackground(adaptiveIcons, background, monochrome);
   if (round != null) {
     _createAdaptiveRound(
-        androidIcons, round, isValidHexaCode(background), monochrome != null);
+      androidIcons,
+      round,
+      isValidHexaCode(background),
+      monochrome != null,
+    );
   } else {
     _removeAdaptiveRound(androidIcons);
   }
@@ -244,10 +252,7 @@ void _removeAdaptiveRound(List<AndroidMipMapIconTemplate> adaptiveIcons) {
   }
   _removeAndroidManifestIconLauncherRound();
   _removeIcLauncherRoundMipMapXmlFile();
-  CliLogger.success(
-    'Removed adaptive round images',
-    level: CliLoggerLevel.two,
-  );
+  CliLogger.success('Removed adaptive round images', level: CliLoggerLevel.two);
 }
 
 /// Create the adaptive monochrome icon
@@ -324,16 +329,14 @@ void _createNotificationIcon(
       ANDROID_NOTIFICATION_ICON_FILE_NAME,
     );
   }
-  CliLogger.success(
-    'Generated notification images',
-    level: CliLoggerLevel.two,
-  );
+  CliLogger.success('Generated notification images', level: CliLoggerLevel.two);
 }
 
 /// Handle colors.xml file
 void _handleColorsXmlFile(String backgroundColor) {
-  final colorsXml =
-      File('${_flavorHelper.androidResFolder}$ANDROID_COLOR_FILE');
+  final colorsXml = File(
+    '${_flavorHelper.androidResFolder}$ANDROID_COLOR_FILE',
+  );
   if (colorsXml.existsSync()) {
     CliLogger.success(
       'Updated colors.xml with color `$backgroundColor`',
@@ -396,8 +399,10 @@ void _updateColorsFile(File colorsXml, String backgroundColor) {
   }
 
   if (!foundExisting) {
-    lines.insert(lines.length - 1,
-        '\t<color name="ic_launcher_background">${color.toUpperCase()}</color>');
+    lines.insert(
+      lines.length - 1,
+      '\t<color name="ic_launcher_background">${color.toUpperCase()}</color>',
+    );
   }
   colorsXml.writeAsStringSync(lines.join('\n'));
 }
@@ -405,11 +410,14 @@ void _updateColorsFile(File colorsXml, String backgroundColor) {
 /// Create ic_launcher_color.xml file
 void _createIcLauncherColorXmlFile(bool hasMonochrome) {
   final icLauncherXml = File(
-      '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_XML_FILE_NAME');
+    '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_XML_FILE_NAME',
+  );
   icLauncherXml.createSync(recursive: true);
-  icLauncherXml.writeAsStringSync(hasMonochrome
-      ? IC_LAUNCHER_BACKGROUND_COLOR_XML
-      : IC_LAUNCHER_BACKGROUND_COLOR_NO_MONOCHROME_XML);
+  icLauncherXml.writeAsStringSync(
+    hasMonochrome
+        ? IC_LAUNCHER_BACKGROUND_COLOR_XML
+        : IC_LAUNCHER_BACKGROUND_COLOR_NO_MONOCHROME_XML,
+  );
   CliLogger.success(
     'Created `$ANDROID_ADAPTIVE_XML_FILE_NAME`',
     level: CliLoggerLevel.two,
@@ -419,11 +427,14 @@ void _createIcLauncherColorXmlFile(bool hasMonochrome) {
 /// Create ic luncher xml file
 void _createIcLauncherMipMapXmlFile(bool hasMonochrome) {
   final icLauncherXml = File(
-      '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_XML_FILE_NAME');
+    '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_XML_FILE_NAME',
+  );
   icLauncherXml.createSync(recursive: true);
-  icLauncherXml.writeAsStringSync(hasMonochrome
-      ? IC_LAUNCHER_MIP_MAP_XML
-      : IC_LAUNCHER_MIP_MAP_NO_MONOCHROME_XML);
+  icLauncherXml.writeAsStringSync(
+    hasMonochrome
+        ? IC_LAUNCHER_MIP_MAP_XML
+        : IC_LAUNCHER_MIP_MAP_NO_MONOCHROME_XML,
+  );
   CliLogger.success(
     'Created `$ANDROID_ADAPTIVE_XML_FILE_NAME`',
     level: CliLoggerLevel.two,
@@ -432,9 +443,12 @@ void _createIcLauncherMipMapXmlFile(bool hasMonochrome) {
 
 /// Create ic_launcher_round.xml file
 void _createIcLauncherRoundMipMapXmlFile(
-    bool backgroundIsColor, bool hasMonochrome) {
+  bool backgroundIsColor,
+  bool hasMonochrome,
+) {
   final icLauncherXml = File(
-      '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_ROUND_XML_FILE_NAME');
+    '${_flavorHelper.androidResFolder}$ANDROID_ADAPTIVE_XML_DIR/$ANDROID_ADAPTIVE_ROUND_XML_FILE_NAME',
+  );
   String contents;
   if (backgroundIsColor) {
     if (hasMonochrome) {
@@ -474,10 +488,13 @@ void _createAndroidManifestIconLauncherRound() {
   final androidManifestString = androidManifestFile.readAsStringSync();
   final manifestLines = androidManifestString.split('\n');
 
-  final index =
-      manifestLines.indexWhere((line) => line.contains('android:roundIcon'));
+  final index = manifestLines.indexWhere(
+    (line) => line.contains('android:roundIcon'),
+  );
   if (index != -1) {
-    final lineUpdated = manifestLines.elementAt(index).replaceAll(
+    final lineUpdated = manifestLines
+        .elementAt(index)
+        .replaceAll(
           RegExp(r'android:roundIcon="[^"]*(\\"[^"]*)*"'),
           'android:roundIcon="@mipmap/$ANDROID_ADAPTIVE_ROUND_XML_FILE_NAME_WITHOUT_EXTENSION"',
         );
@@ -488,14 +505,16 @@ void _createAndroidManifestIconLauncherRound() {
       level: CliLoggerLevel.two,
     );
   } else {
-    final index =
-        manifestLines.indexWhere((line) => line.contains('android:icon'));
+    final index = manifestLines.indexWhere(
+      (line) => line.contains('android:icon'),
+    );
     if (index != -1) {
-      final lineUpdated = manifestLines
-          .elementAt(index)
-          .replaceAll(RegExp(r'android:icon="[^"]*(\\"[^"]*)*"'), '''
+      final lineUpdated = manifestLines.elementAt(index).replaceAll(
+        RegExp(r'android:icon="[^"]*(\\"[^"]*)*"'),
+        '''
 android:icon="@mipmap/$ANDROID_ICON_NAME"
-\t\tandroid:roundIcon="@mipmap/$ANDROID_ADAPTIVE_ROUND_XML_FILE_NAME_WITHOUT_EXTENSION"''');
+\t\tandroid:roundIcon="@mipmap/$ANDROID_ADAPTIVE_ROUND_XML_FILE_NAME_WITHOUT_EXTENSION"''',
+      );
 
       manifestLines.replaceRange(index, index + 1, [lineUpdated]);
       androidManifestFile.writeAsStringSync(manifestLines.join('\n'));
@@ -513,16 +532,19 @@ void _removeAndroidManifestIconLauncherRound() {
   final androidManifestString = androidManifestFile.readAsStringSync();
   final manifestLines = androidManifestString.split('\n');
 
-  final index =
-      manifestLines.indexWhere((line) => line.contains('android:roundIcon'));
+  final index = manifestLines.indexWhere(
+    (line) => line.contains('android:roundIcon'),
+  );
   if (index != -1) {
     final lineUpdated = manifestLines
         .elementAt(index)
         .replaceAll(RegExp(r'android:roundIcon="[^"]*(\\"[^"]*)*"'), '');
     manifestLines.replaceRange(index, index + 1, [lineUpdated]);
     androidManifestFile.writeAsStringSync(manifestLines.join('\n'));
-    CliLogger.success('Removed `android:roundIcon` from manifest',
-        level: CliLoggerLevel.two);
+    CliLogger.success(
+      'Removed `android:roundIcon` from manifest',
+      level: CliLoggerLevel.two,
+    );
   }
 }
 
@@ -531,8 +553,9 @@ int _minSdk() {
   String? minSdkValue;
 
   final androidGradleFile = File(ANDROID_GRADLE_FILE);
-  final List<String> androidLines =
-      androidGradleFile.existsSync() ? androidGradleFile.readAsLinesSync() : [];
+  final List<String> androidLines = androidGradleFile.existsSync()
+      ? androidGradleFile.readAsLinesSync()
+      : [];
 
   //! First try -> app/build.gradle file
   const androidLineKey = 'minSdkVersion';
