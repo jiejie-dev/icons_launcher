@@ -1,3 +1,8 @@
+## 3.2.1
+
+ - **REFACTOR**(android): improve code formatting and readability in android.dart.
+ - **FIX**(android): improve minSdk version retrieval by checking file existence.
+
 ## 3.2.0
 
  - **FEAT**(tray): add support for tray icon configuration and validation.
