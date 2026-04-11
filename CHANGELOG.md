@@ -1,3 +1,7 @@
+## 3.2.2
+
+ - **FIX**(flavor): correct capitalization method for iOS flavor name.
+
 ## 3.2.1
 
  - **REFACTOR**(android): improve code formatting and readability in android.dart.
