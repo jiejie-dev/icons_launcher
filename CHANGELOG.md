@@ -1,3 +1,7 @@
+## 3.2.3
+
+ - **DOCS**(icons_launcher): 补齐文档目录分层.
+
 ## 3.2.2
 
  - **FIX**(flavor): correct capitalization method for iOS flavor name.
